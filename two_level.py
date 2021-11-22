@@ -2,8 +2,9 @@
 from caches import *
 import m5
 from m5.objects import *
+from m5.util import convert
 
-
+import x86_mp
 
 system = System()
  
@@ -11,48 +12,15 @@ system.clk_domain = SrcClockDomain()
 system.clk_domain.clock = '2GHz'
 system.clk_domain.voltage_domain = VoltageDomain()
  
-binary = 'configs/tutorial/project/out'
+#binary = 'configs/tutorial/project/WriteEfficientTiling/out'
  
-system.workload = SEWorkload.init_compatible(binary)
+#system.workload = SEWorkload.init_compatible(binary)
  
-process = Process()
-process.cmd = [binary]
+#process = Process()
+#process.cmd = [binary]
 
 system.mem_mode = 'timing'
 system.mem_ranges = [AddrRange('512MB')]
- 
-#Creat CPU
-system.cpu1 = O3CPU()
-system.cpu1.workload = process
-system.cpu1.createThreads()
-
-system.cpu2 = O3CPU()
-system.cpu2.workload = process
-system.cpu2.createThreads()
-
-system.cpu3 = O3CPU()
-system.cpu3.workload = process
-system.cpu3.createThreads()
-
-system.cpu4 = O3CPU()
-system.cpu4.workload = process
-system.cpu4.createThreads()
-
-system.cpu5 = O3CPU()
-system.cpu5.workload = process
-system.cpu5.createThreads()
-
-system.cpu6 = O3CPU()
-system.cpu6.workload = process
-system.cpu6.createThreads()
-
-system.cpu7 = O3CPU()
-system.cpu7.workload = process
-system.cpu7.createThreads()
-
-system.cpu8 = O3CPU()
-system.cpu8.workload = process
-system.cpu8.createThreads()
 
 # Memory
 system.membus = SystemXBar()
@@ -60,6 +28,43 @@ system.membus.badaddr_responder = BadAddr()
 system.membus.default = system.membus.badaddr_responder.pio
 # Set up the system port for functional access from the simulator
 system.system_port = system.membus.cpu_side_ports
+
+x86_mp.init_fs(system, system.membus, 8)
+system.kernel = binary
+
+#Creat CPU
+system.cpu1 = O3CPU()
+#system.cpu1.workload = process
+system.cpu1.createThreads()
+
+system.cpu2 = O3CPU()
+#system.cpu2.workload = process
+system.cpu2.createThreads()
+
+system.cpu3 = O3CPU()
+#system.cpu3.workload = process
+system.cpu3.createThreads()
+
+system.cpu4 = O3CPU()
+#system.cpu4.workload = process
+system.cpu4.createThreads()
+
+system.cpu5 = O3CPU()
+#system.cpu5.workload = process
+system.cpu5.createThreads()
+
+system.cpu6 = O3CPU()
+#system.cpu6.workload = process
+system.cpu6.createThreads()
+
+system.cpu7 = O3CPU()
+#system.cpu7.workload = process
+system.cpu7.createThreads()
+
+system.cpu8 = O3CPU()
+#system.cpu8.workload = process
+system.cpu8.createThreads()
+
 
 #Create cache hierarchy
 system.cpu1.icache = L1ICache()
