@@ -11,26 +11,47 @@ system.clk_domain = SrcClockDomain()
 system.clk_domain.clock = '2GHz'
 system.clk_domain.voltage_domain = VoltageDomain()
  
+binary = 'configs/tutorial/project/out'
+ 
+system.workload = SEWorkload.init_compatible(binary)
+ 
+process = Process()
+process.cmd = [binary]
 
 system.mem_mode = 'timing'
 system.mem_ranges = [AddrRange('512MB')]
  
 #Creat CPU
 system.cpu1 = O3CPU()
+system.cpu1.workload = process
 system.cpu1.createThreads()
+
 system.cpu2 = O3CPU()
+system.cpu2.workload = process
 system.cpu2.createThreads()
+
 system.cpu3 = O3CPU()
+system.cpu3.workload = process
 system.cpu3.createThreads()
+
 system.cpu4 = O3CPU()
+system.cpu4.workload = process
 system.cpu4.createThreads()
+
 system.cpu5 = O3CPU()
+system.cpu5.workload = process
 system.cpu5.createThreads()
+
 system.cpu6 = O3CPU()
+system.cpu6.workload = process
 system.cpu6.createThreads()
+
 system.cpu7 = O3CPU()
+system.cpu7.workload = process
 system.cpu7.createThreads()
+
 system.cpu8 = O3CPU()
+system.cpu8.workload = process
 system.cpu8.createThreads()
 
 # Memory
@@ -38,7 +59,7 @@ system.membus = SystemXBar()
 system.membus.badaddr_responder = BadAddr()
 system.membus.default = system.membus.badaddr_responder.pio
 # Set up the system port for functional access from the simulator
-system.system_port = system.membus.slave
+system.system_port = system.membus.cpu_side_ports
 
 #Create cache hierarchy
 system.cpu1.icache = L1ICache()
@@ -89,32 +110,32 @@ system.cpu7.dcache.connectCPU(system.cpu7)
 
 system.cpu8.icache.connectCPU(system.cpu8)
 system.cpu8.dcache.connectCPU(system.cpu8)
- 
+'''
 #Connect the CPU TLBs directly to the mem.
-system.cpu1.itb.walker.port = system.membus.slave
-system.cpu1.dtb.walker.port = system.membus.slave
+system.cpu1.itb.walker.port = system.membus.cpu_side_ports
+system.cpu1.dtb.walker.port = system.membus.cpu_side_ports
 
-system.cpu2.itb.walker.port = system.membus.slave
-system.cpu2.dtb.walker.port = system.membus.slave
+system.cpu2.itb.walker.port = system.membus.cpu_side_ports
+system.cpu2.dtb.walker.port = system.membus.cpu_side_ports
 
-system.cpu3.itb.walker.port = system.membus.slave
-system.cpu3.dtb.walker.port = system.membus.slave
+system.cpu3.itb.walker.port = system.membus.cpu_side_ports
+system.cpu3.dtb.walker.port = system.membus.cpu_side_ports
 
-system.cpu4.itb.walker.port = system.membus.slave
-system.cpu4.dtb.walker.port = system.membus.slave
+system.cpu4.itb.walker.port = system.membus.cpu_side_ports
+system.cpu4.dtb.walker.port = system.membus.cpu_side_ports
 
-system.cpu5.itb.walker.port = system.membus.slave
-system.cpu5.dtb.walker.port = system.membus.slave
+system.cpu5.itb.walker.port = system.membus.cpu_side_ports
+system.cpu5.dtb.walker.port = system.membus.cpu_side_ports
 
-system.cpu6.itb.walker.port = system.membus.slave
-system.cpu6.dtb.walker.port = system.membus.slave
+system.cpu6.itb.walker.port = system.membus.cpu_side_ports
+system.cpu6.dtb.walker.port = system.membus.cpu_side_ports
 
-system.cpu7.itb.walker.port = system.membus.slave
-system.cpu7.dtb.walker.port = system.membus.slave
+system.cpu7.itb.walker.port = system.membus.cpu_side_ports
+system.cpu7.dtb.walker.port = system.membus.cpu_side_ports
 
-system.cpu8.itb.walker.port = system.membus.slave
-system.cpu8.dtb.walker.port = system.membus.slave
-
+system.cpu8.itb.walker.port = system.membus.cpu_side_ports
+system.cpu8.dtb.walker.port = system.membus.cpu_side_ports
+'''
 #Create L2 bus
 system.l2bus = L2XBar()
 system.cpu1.icache.connectBus(system.l2bus)
@@ -160,36 +181,36 @@ system.cpu8.createInterruptController()
 
 if m5.defines.buildEnv['TARGET_ISA'] == "x86":
     system.cpu1.interrupts[0].pio = system.membus.mem_side_ports
-    system.cpu1.interrupts[0].int_master = system.membus.slave
-    system.cpu1.interrupts[0].int_slave = system.membus.master
+    system.cpu1.interrupts[0].int_requestor = system.membus.cpu_side_ports
+    system.cpu1.interrupts[0].int_responder = system.membus.mem_side_ports
     
     system.cpu2.interrupts[0].pio = system.membus.mem_side_ports
-    system.cpu2.interrupts[0].int_master = system.membus.slave
-    system.cpu2.interrupts[0].int_slave = system.membus.master
+    system.cpu2.interrupts[0].int_requestor = system.membus.cpu_side_ports
+    system.cpu2.interrupts[0].int_responder = system.membus.mem_side_ports
     
     system.cpu3.interrupts[0].pio = system.membus.mem_side_ports
-    system.cpu3.interrupts[0].int_master = system.membus.slave
-    system.cpu3.interrupts[0].int_slave = system.membus.master
+    system.cpu3.interrupts[0].int_requestor = system.membus.cpu_side_ports
+    system.cpu3.interrupts[0].int_responder = system.membus.mem_side_ports
     
     system.cpu4.interrupts[0].pio = system.membus.mem_side_ports
-    system.cpu4.interrupts[0].int_master = system.membus.slave
-    system.cpu4.interrupts[0].int_slave = system.membus.master
+    system.cpu4.interrupts[0].int_requestor = system.membus.cpu_side_ports
+    system.cpu4.interrupts[0].int_responder = system.membus.mem_side_ports
     
     system.cpu5.interrupts[0].pio = system.membus.mem_side_ports
-    system.cpu5.interrupts[0].int_master = system.membus.slave
-    system.cpu5.interrupts[0].int_slave = system.membus.master
+    system.cpu5.interrupts[0].int_requestor = system.membus.cpu_side_ports
+    system.cpu5.interrupts[0].int_responder = system.membus.mem_side_ports
     
     system.cpu6.interrupts[0].pio = system.membus.mem_side_ports
-    system.cpu6.interrupts[0].int_master = system.membus.slave
-    system.cpu6.interrupts[0].int_slave = system.membus.master
+    system.cpu6.interrupts[0].int_requestor = system.membus.cpu_side_ports
+    system.cpu6.interrupts[0].int_responder = system.membus.mem_side_ports
     
     system.cpu7.interrupts[0].pio = system.membus.mem_side_ports
-    system.cpu7.interrupts[0].int_master = system.membus.slave
-    system.cpu7.interrupts[0].int_slave = system.membus.master
+    system.cpu7.interrupts[0].int_requestor = system.membus.cpu_side_ports
+    system.cpu7.interrupts[0].int_responder = system.membus.mem_side_ports
     
     system.cpu8.interrupts[0].pio = system.membus.mem_side_ports
-    system.cpu8.interrupts[0].int_master = system.membus.slave
-    system.cpu8.interrupts[0].int_slave = system.membus.master
+    system.cpu8.interrupts[0].int_requestor = system.membus.cpu_side_ports
+    system.cpu8.interrupts[0].int_responder = system.membus.mem_side_ports
  
 
 system.mem_ctrl = MemCtrl()
@@ -198,18 +219,9 @@ system.mem_ctrl.dram = DDR3_1600_8x8()
 system.mem_ctrl.dram.range = system.mem_ranges[0]
  
 
-binary = 'configs/tutorial/project/out'
  
 
-system.workload = SEWorkload.init_compatible(binary)
- 
-process = Process()
-process.cmd = [binary]
-system.cpu.workload = process
-system.cpu.createThreads()
- 
-
-root = Root(full_system = False,system = system)
+root = Root(full_system = True,system = system)
 m5.instantiate()
  
 
